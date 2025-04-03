@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +19,14 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+// Configure DbContext to use the appropriate connection string based on environment
+var connectionString = builder.Environment.IsDevelopment() ?
+    builder.Configuration.GetConnectionString("DefaultConnection") :
+    builder.Configuration.GetConnectionString("ProductionConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 
