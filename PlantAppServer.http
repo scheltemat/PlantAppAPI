@@ -1,0 +1,6 @@
+@PlantAppServer_HostAddress = http://localhost:5000
+
+GET {{PlantAppServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

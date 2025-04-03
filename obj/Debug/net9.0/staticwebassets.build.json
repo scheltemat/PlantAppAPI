@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "GbEn2OVfOujEFw9In+chmbR6KW0wxl3YNt+QUhclSGE=",
+  "Source": "PlantAppServer",
+  "BasePath": "_content/PlantAppServer",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
