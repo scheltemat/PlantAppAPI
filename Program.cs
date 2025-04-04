@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddOpenApi();
 
 // Configure CORS to allow requests from different origins based on the environment
@@ -14,7 +14,7 @@ builder.Services.AddCors(options =>
             ? "http://localhost:5000"  // Development URL
             : "https://www.yourapp.com";  // Production URL
         
-        policy.WithOrigins(allowedOrigin)  // Dynamically set allowed origin based on environment
+        policy.WithOrigins(allowedOrigin)
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
@@ -28,24 +28,29 @@ var connectionString = builder.Environment.IsDevelopment() ?
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+// Add controllers to the container
+builder.Services.AddControllers();
+
 var app = builder.Build();
+
+// Enable middleware to serve generated Swagger as a JSON endpoint
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi(); // This will allow OpenAPI docs in the development environment
+}
 
 // Use CORS to allow communication between the Blazor app and the API
 app.UseCors("AllowBlazorApp");
 
-// Create a route group for API and prefix it with /api
-var api = app.MapGroup("/api");
+// Use routing and map controllers
+app.UseRouting();
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    api.MapOpenApi(); // This will allow OpenAPI docs in the development environment
-}
+app.MapControllers();  // This maps all controller-based routes
 
-// Define your API endpoints under the /api route group
-api.MapGet("/", () =>
+// Simple health check endpoint
+app.MapGet("/", () =>
 {
-    return Results.Ok(new { message = "I am healthy" }); // A simple health check response
+    return Results.Ok(new { message = "I am healthy" });
 }).WithName("HealthCheck");
 
 app.Run();
