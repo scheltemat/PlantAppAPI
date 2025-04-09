@@ -12,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Load environment variables from the .env file
 Env.Load();
-Console.WriteLine("JWT_SECRET_KEY: " + Environment.GetEnvironmentVariable("JWT_SECRET_KEY"));
 
 // Add services to the container
 builder.Services.AddOpenApi();
