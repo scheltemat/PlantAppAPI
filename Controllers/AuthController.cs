@@ -136,7 +136,7 @@ namespace PlantAppServer.Controllers
         public async Task<IActionResult> Logout()
         {
             // No need to manage cookies; JWT handles this on the client-side (no logout on server-side needed).
-            return Ok(new { message = "Logged out successfully" });
+            return  Ok(new { message = "Logged out successfully" });
         }
 
         // Helper method to generate JWT token
@@ -188,7 +188,7 @@ namespace PlantAppServer.Controllers
     {
         // Id is now of type int to match ApplicationUser's Id
         public int Id { get; set; }  
-        public string Username { get; set; }
-        public string Email { get; set; }
+        public required string Username { get; set; }
+        public required string Email { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using DotNetEnv;  // Required to load .env file
 using System.Text;
 using PlantAppServer.Models;
 using Microsoft.Extensions.Options;
+using PlantAppServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,13 +17,16 @@ Env.Load();
 // Add services to the container
 builder.Services.AddOpenApi();
 
+// Add HttpClient support (THIS IS THE FIX)
+builder.Services.AddHttpClient();  // Add this line
+
 // Configure CORS to allow requests from different origins based on the environment
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazorApp", policy =>
+    options.AddPolicy("AllowAngularApp", policy =>
     {
         var allowedOrigin = builder.Environment.IsDevelopment()
-            ? "http://localhost:5000"  // Development URL
+            ? "http://localhost:4200"  // Development URL
             : "https://www.yourapp.com";  // Production URL
         
         policy.WithOrigins(allowedOrigin)
@@ -99,6 +103,8 @@ builder.Services.AddAuthentication(options =>
 // Add controllers to the container
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<IPermapeopleService, PermapeopleService>();
+
 // Register Swagger services
 builder.Services.AddSwaggerGen(options =>
 {
@@ -121,7 +127,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Use CORS to allow communication between the Blazor app and the API
-app.UseCors("AllowBlazorApp");
+app.UseCors("AllowAngularApp");
 
 // Use authentication and authorization middleware
 app.UseAuthentication();
