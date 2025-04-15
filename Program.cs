@@ -6,7 +6,6 @@ using Microsoft.OpenApi.Models;
 using DotNetEnv;  // Required to load .env file
 using System.Text;
 using PlantAppServer.Models;
-using Microsoft.Extensions.Options;
 using PlantAppServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
