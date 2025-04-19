@@ -103,6 +103,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IPermapeopleService, PermapeopleService>();
+builder.Services.AddScoped<IWateringService, WateringService>();
 
 // Register Swagger services
 builder.Services.AddSwaggerGen(options =>

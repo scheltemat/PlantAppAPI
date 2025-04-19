@@ -42,6 +42,7 @@ namespace PlantAppServer.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
+                    PhoneNumber = model.PhoneNumber
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -174,6 +175,7 @@ namespace PlantAppServer.Controllers
     public class RegisterModel
     {
         public required string Email { get; set; }
+        public required string PhoneNumber { get; set; }
         public required string Password { get; set; }
         public required string ConfirmPassword { get; set; }
     }

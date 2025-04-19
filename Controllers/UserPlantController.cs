@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PlantAppServer.Models;
 using PlantAppServer.Models.DTOs;
 using System.Security.Claims;
+using PlantAppServer.Services;
 
 namespace PlantAppServer.Controllers
 {
@@ -14,11 +15,17 @@ namespace PlantAppServer.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<UserPlantController> _logger;
+        private readonly IWateringService _wateringService;
 
-        public UserPlantController(ApplicationDbContext context, ILogger<UserPlantController> logger)
+        public UserPlantController(
+            ApplicationDbContext context, 
+            ILogger<UserPlantController> logger, 
+            IWateringService wateringService)
         {
             _context = context;
             _logger = logger;
+            _wateringService = wateringService;
+            
         }
 
         // get all plants in the user's garden
@@ -158,51 +165,20 @@ namespace PlantAppServer.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
                                 ?? throw new UnauthorizedAccessException());
 
-            try
+            var result = await _wateringService.WaterPlantAsync(userId, waterPlantDto.PlantId);
+
+            if (!result.Success)
             {
-                // Get the user's plant with plant details
-                var userPlant = await _context.UserPlants
-                    .Include(up => up.Plant)
-                    .FirstOrDefaultAsync(up => up.UserId == userId && up.PlantId == waterPlantDto.PlantId);
-
-                if (userPlant == null)
-                    return NotFound("Plant not found in your garden");
-
-                // Water the plant
-                var today = DateOnly.FromDateTime(DateTime.Today);
-                userPlant.LastWatered = today;
-                userPlant.NextWatering = CalculateNextWateringDate(userPlant, today);
-
-                await _context.SaveChangesAsync();
-
-                return Ok(new 
-                {
-                    message = "Plant watered successfully!",
-                    lastWatered = userPlant.LastWatered,
-                    nextWatering = userPlant.NextWatering,
-                    waterRequirement = userPlant.Plant.WaterRequirement
-                });
+                return NotFound(result.ErrorMessage);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error watering plant {PlantId} for user {UserId}", 
-                    waterPlantDto.PlantId, userId);
-                return StatusCode(500, "An error occurred while watering your plant");
-            }
-        }
 
-        private DateOnly CalculateNextWateringDate(UserPlant userPlant, DateOnly wateringDate)
-        {
-            // Get the plant's water requirement
-            var waterRequirement = userPlant.Plant.WaterRequirement?.Trim() ?? "Moist";
-            
-            // Calculate next watering date based on the actual API values
-            return waterRequirement switch
+            return Ok(new 
             {
-                "Dry, Moist" => wateringDate.AddDays(10),  // Plants that prefer dry soil watered less frequently
-                "Moist" => wateringDate.AddDays(5),        // Moist-loving plants watered more frequently
-                _ => wateringDate.AddDays(7)               // Default fallback
-            };
+                message = "Plant watered successfully!",
+                lastWatered = result.LastWatered,
+                nextWatering = result.NextWatering,
+                waterRequirement = result.WaterRequirement
+            });
         }
     }
 
