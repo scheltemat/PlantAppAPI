@@ -7,6 +7,7 @@ using DotNetEnv;  // Required to load .env file
 using System.Text;
 using PlantAppServer.Models;
 using PlantAppServer.Services;
+using PlantAppServer.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -104,6 +105,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IPermapeopleService, PermapeopleService>();
 builder.Services.AddScoped<IWateringService, WateringService>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+
+builder.Services.AddScoped<IReminderService, ReminderService>();
+builder.Services.AddHostedService<ReminderScheduler>();
+
+
 
 // Register Swagger services
 builder.Services.AddSwaggerGen(options =>

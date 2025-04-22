@@ -46,7 +46,11 @@ namespace PlantAppServer.Controllers
                         Id = up.Plant.Id,
                         PermapeopleId = up.Plant.PermapeopleId,
                         Name = up.Plant.Name,
-                        ImageUrl = up.Plant.ImageUrl
+                        ImageUrl = up.Plant.ImageUrl,
+                        WaterRequirement = up.Plant.WaterRequirement,
+                        LightRequirement = up.Plant.LightRequirement,
+                        NeedsWatering = !up.NextWatering.HasValue || 
+                                        DateOnly.FromDateTime(DateTime.Today) >= up.NextWatering.Value,
                     }).ToList()
                     : null // Set to null if no plants exist for the user
             }).ToList();
